@@ -30,7 +30,8 @@ public class BDDRequests implements InterfaceRequests{
         return null;
     }
 
-    public void bdd_creneaux(int year, int month, int day){
+    @Override
+    public void afficherCreneaux(int year, int month, int day){
         String dateTest = String.valueOf(day)+'-'+String.valueOf(month)+'-'+String.valueOf(year);
         // La requête est celle qui était dans ckonsoru.bdd
         String requetesql = "WITH creneauxDisponibles AS (SELECT vet_nom, generate_series(?::date+dis_debut, ?::date+dis_fin-'00:20:00'::time, '20 minutes'::interval) debut FROM disponibilite INNER JOIN veterinaire ON veterinaire.vet_id = disponibilite.vet_id WHERE dis_jour = EXTRACT('DOW' FROM ?::date) ORDER BY vet_nom, dis_id), creneauxReserves AS (SELECT vet_nom, rv_debut debut FROM rendezvous INNER JOIN veterinaire ON veterinaire.vet_id = rendezvous.vet_id WHERE rv_debut BETWEEN ?::date AND ?::date +'23:59:59'::time), creneauxRestants AS (SELECT * FROM creneauxDisponibles EXCEPT SELECT * FROM creneauxReserves) SELECT * FROM creneauxRestants ORDER BY vet_nom, debut";
@@ -52,16 +53,18 @@ public class BDDRequests implements InterfaceRequests{
         }
     }
 
-    public void prendrerdv(Timestamp daterdv, String nomveto, String nomcli){
+    @Override
+    public void addRdv(String date, String nVeto, String nClient){
+        Timestamp daterdv = Timestamp.valueOf(date);
         String requetesql = "INSERT INTO rendezvous (vet_id, rv_debut, rv_client) VALUES((SELECT vet_id FROM veterinaire WHERE vet_nom = ?), ?, ?)";
         try{
             Connection con = connexion();
             PreparedStatement request = con.prepareStatement(requetesql);
-            request.setString(1, nomveto);
+            request.setString(1, nVeto);
             request.setTimestamp(2, daterdv);
-            request.setString(3, nomcli);
+            request.setString(3, nClient);
             request.executeUpdate();
-            System.out.println("Un rendez-vous pour " + nomcli + " avec " + nomveto + " le " + daterdv + " a été ajouté.");
+            System.out.println("Un rendez-vous pour " + nClient + " avec " + nVeto + " le " + daterdv + " a été ajouté.");
         }catch (Exception e) {
             System.out.println(e);
         }
@@ -81,7 +84,8 @@ public class BDDRequests implements InterfaceRequests{
         return totalRows;    
     }
 
-    public void listerdv(String nomcli){
+    @Override
+    public void afficheRdv(String nomcli){
         String requetesql = "SELECT rv_id, rv_debut, vet_nom FROM rendezvous, veterinaire WHERE rv_client = ? AND veterinaire.vet_id = rendezvous.vet_id ORDER BY rv_debut DESC";
         try{
             Connection con = connexion();
@@ -97,7 +101,9 @@ public class BDDRequests implements InterfaceRequests{
         }
     }
 
-    public void supprrdv(String nomcli, Timestamp daterdv){
+    @Override
+    public void supprRdv(String nomcli, String date){
+        Timestamp daterdv = Timestamp.valueOf(date);
         String requetesql = "DELETE FROM rendezvous WHERE rv_client = ? AND rv_debut = ?";
         try{
             Connection con = connexion();

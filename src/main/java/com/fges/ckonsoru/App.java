@@ -33,6 +33,16 @@ public class App {
         System.out.println("Mode de persistence : "
                 +properties.getProperty("persistence"));
 
+        InterfaceRequests test;
+        if(properties.getProperty("persistence").equals("xml"))
+        {
+            test = new XMLRequests();
+        }
+        else
+        {
+            test = new BDDRequests();
+        }
+
         while(true){
             String actionARealiser = ""; // On le redéfinit chaque fois pour éviter une boucle infinie
 
@@ -57,24 +67,13 @@ public class App {
                 System.out.println("De quel jour souhaitez-vous afficher les créneaux (de forme jj/mm/aaaa) ?");
                 String datecherchee = sc.nextLine();
                 String partiesdates[] = datecherchee.split("/");
-                if(properties.getProperty("persistence").equals("xml")){
-                    XMLRequests test = new XMLRequests();
-                    test.afficherCreneaux(Integer.parseInt(partiesdates[2]), Integer.parseInt(partiesdates[1]), Integer.parseInt(partiesdates[0]));
-                }else{
-                    BDDRequests test = new BDDRequests();
-                    test.bdd_creneaux(Integer.parseInt(partiesdates[2]), Integer.parseInt(partiesdates[1]), Integer.parseInt(partiesdates[0]));
-                }
+                test.afficherCreneaux(Integer.parseInt(partiesdates[2]), Integer.parseInt(partiesdates[1]), Integer.parseInt(partiesdates[0]));
             }else if(actionARealiser.equals("2")){
                 System.out.println("Liste de rendez-vous d'un client.");
                 System.out.println("Indiquer le nom du client :");
                 String nomcli = sc.nextLine();
-                if(properties.getProperty("persistence").equals("xml")){
-                    XMLRequests test = new XMLRequests();
-                    test.afficheRDVCli(nomcli);
-                }else{
-                    BDDRequests test = new BDDRequests();
-                    test.listerdv(nomcli);
-                }
+
+                    test.afficheRdv(nomcli);
             }else if(actionARealiser.equals("3")){
                 System.out.println("Prise de rendez-vous.");
                 System.out.println("Indiquer une date et heure de début au format JJ/MM/AAAA HH:MM (ex: 18/03/2021 15:00) :");
@@ -83,36 +82,21 @@ public class App {
                 String nomveto = sc.nextLine();
                 System.out.println("Indiquer le nom du client :");
                 String nomcli = sc.nextLine();
-                if(properties.getProperty("persistence").equals("xml")){
-                    XMLRequests test = new XMLRequests();
                     try{
                         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm");
                         Date parsedDate = dateFormat.parse(daterdv);
                         Timestamp datetimestamp = new java.sql.Timestamp(parsedDate.getTime());
                         String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(datetimestamp);
-                        test.AddRdv(timeStamp,nomveto,nomcli);
+                        test.addRdv(timeStamp,nomveto,nomcli);
                     }catch(Exception e){
                         System.out.println(e);
                     }
-                }else{
-                    BDDRequests test = new BDDRequests();
-                    try{
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm");
-                        Date parsedDate = dateFormat.parse(daterdv);
-                        Timestamp datetimestamp = new java.sql.Timestamp(parsedDate.getTime());
-                        test.prendrerdv(datetimestamp, nomveto, nomcli);
-                    }catch(Exception e){
-                        System.out.println(e);
-                    }
-                }
             }else if(actionARealiser.equals("4")){
                 System.out.println("Suppression d'un rendez-vous.");
                 System.out.println("Indiquer une date et heure de début au format JJ/MM/AAAA HH:MM (ex: 18/03/2021 15:00) :");
                 String daterdv = sc.nextLine();
                 System.out.println("Indiquer le nom du client :");
                 String nomcli = sc.nextLine();
-                if(properties.getProperty("persistence").equals("xml")){
-                    XMLRequests test = new XMLRequests();
                     try{
                         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm");
                         Date parsedDate = dateFormat.parse(daterdv);
@@ -122,17 +106,6 @@ public class App {
                     }catch(Exception e){
                         System.out.println(e);
                     }
-                }else{
-                    BDDRequests test = new BDDRequests();
-                    try{
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm");
-                        Date parsedDate = dateFormat.parse(daterdv);
-                        Timestamp datetimestamp = new java.sql.Timestamp(parsedDate.getTime());
-                        test.supprrdv(nomcli, datetimestamp);
-                    }catch(Exception e){
-                        System.out.println(e);
-                    }
-                }
             }else if(actionARealiser.equals("9")){
                 quitter();
             }

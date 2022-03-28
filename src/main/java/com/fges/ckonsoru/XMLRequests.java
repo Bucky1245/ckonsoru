@@ -23,6 +23,7 @@ import java.util.*;
 
 
 public class XMLRequests implements InterfaceRequests{
+    @Override
     public void afficherCreneaux(int year, int month, int day){
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -69,7 +70,8 @@ public class XMLRequests implements InterfaceRequests{
         }
     }
 
-    public void afficheRDVCli(String nomcli){
+    @Override
+    public void afficheRdv(String nomcli){
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder;
@@ -106,7 +108,8 @@ public class XMLRequests implements InterfaceRequests{
         }
     }
 
-    public void AddRdv(String date, String N_Veto, String N_Client)
+    @Override
+    public void addRdv(String date, String nVeto, String nClient)
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -127,18 +130,18 @@ public class XMLRequests implements InterfaceRequests{
             rdv.appendChild(daterdv);
             
             Element client = xmldoc.createElement("client");
-            client.appendChild(xmldoc.createTextNode(N_Client));
+            client.appendChild(xmldoc.createTextNode(nClient));
             rdv.appendChild(client);
 
             Element veterinaire = xmldoc.createElement("veterinaire");
-            veterinaire.appendChild(xmldoc.createTextNode(N_Veto));
+            veterinaire.appendChild(xmldoc.createTextNode(nVeto));
             rdv.appendChild(veterinaire);
 
             // ajout au noeud rdvs
             NodeList nodes = xmldoc.getElementsByTagName("rdvs");
             nodes.item(0).appendChild(rdv);
 
-            System.out.println("Un rendez-vous pour " + N_Client + " avec " +  N_Veto + " a été réservé le " + date);
+            System.out.println("Un rendez-vous pour " + nClient + " avec " +  nVeto + " a été réservé le " + date);
 
             // enregistrer le fichier
             DOMSource source = new DOMSource(xmldoc);
@@ -153,6 +156,7 @@ public class XMLRequests implements InterfaceRequests{
         }
     }
 
+    @Override
     public void supprRdv(String date, String N_Client){
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
