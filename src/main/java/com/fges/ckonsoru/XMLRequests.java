@@ -22,7 +22,7 @@ import javax.xml.xpath.*;
 import java.util.*;
 
 
-public class XMLRequests {
+public class XMLRequests implements InterfaceRequests{
     public void afficherCreneaux(int year, int month, int day){
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);

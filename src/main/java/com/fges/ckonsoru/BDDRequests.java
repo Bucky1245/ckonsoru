@@ -3,7 +3,7 @@ package com.fges.ckonsoru;
 import java.util.Properties;
 import java.sql.*;
 
-public class BDDRequests {
+public class BDDRequests implements InterfaceRequests{
     public Connection connexion(){
         try{
             // Chargement de la configuration de la bdd (le config.properties)
