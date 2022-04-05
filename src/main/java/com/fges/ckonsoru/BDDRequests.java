@@ -10,6 +10,20 @@ import java.util.List;
 import java.util.Properties;
 
 public class BDDRequests implements InterfaceRequests{
+
+    private static BDDRequests bddRequests;
+
+    private BDDRequests(){}
+
+    public static BDDRequests getInstance()
+    {
+        if(bddRequests == null)
+        {
+            bddRequests = new BDDRequests();
+        }
+        return bddRequests;
+    }
+
     public Connection connexion(){
         try{
             // Chargement de la configuration de la bdd (le config.properties)

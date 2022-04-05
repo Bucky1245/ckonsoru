@@ -25,6 +25,20 @@ import java.util.*;
 
 
 public class XMLRequests implements InterfaceRequests{
+
+    private static XMLRequests xmlRequests;
+
+    private XMLRequests(){}
+
+    public static XMLRequests getInstance()
+    {
+        if(xmlRequests == null)
+        {
+            xmlRequests = new XMLRequests();
+        }
+        return xmlRequests;
+    }
+
     @Override
     public List<Disponibilites> afficherCreneaux(int year, int month, int day){
         List<Disponibilites> donnees = new ArrayList<>();

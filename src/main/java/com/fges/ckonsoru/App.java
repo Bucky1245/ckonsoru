@@ -37,11 +37,11 @@ public class App {
         InterfaceRequests test;
         if(properties.getProperty("persistence").equals("xml"))
         {
-            test = new XMLRequests();
+            test = XMLRequests.getInstance();
         }
         else
         {
-            test = new BDDRequests();
+            test = BDDRequests.getInstance();
         }
 
         while(true){
