@@ -7,6 +7,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.io.*;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,7 +26,8 @@ import java.util.*;
 
 public class XMLRequests implements InterfaceRequests{
     @Override
-    public void afficherCreneaux(int year, int month, int day){
+    public List<Disponibilites> afficherCreneaux(int year, int month, int day){
+        List<Disponibilites> donnees = new ArrayList<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder;
@@ -58,7 +61,7 @@ public class XMLRequests implements InterfaceRequests{
                     LocalDateTime dateTimedeb = LocalDateTime.of(year, month, day, Integer.parseInt(partiesdebut[0]), Integer.parseInt(partiesdebut[1]));
                     LocalDateTime dateTimefin = LocalDateTime.of(year, month, day, Integer.parseInt(partiesfin[0]), Integer.parseInt(partiesfin[1]));
                     while(dateTimedeb.isEqual(dateTimefin) == false){
-                        System.out.println(veto + " : " + dateTimedeb);
+                        donnees.add(new Disponibilites(jour,Time.valueOf(debut),Time.valueOf(fin), veto));
                         dateTimedeb = dateTimedeb.plus(20, ChronoUnit.MINUTES);
                     }
                     //System.out.println(veto + " : " + dateTimefin);
@@ -68,10 +71,12 @@ public class XMLRequests implements InterfaceRequests{
             System.err.println("Erreur à l'ouverture du fichier xml");
             e.printStackTrace(System.err);
         }
+        return donnees;
     }
 
     @Override
-    public void afficheRdv(String nomcli){
+    public List<RendezVous> afficheRdv(String nomcli){
+        List<RendezVous> donnees = new ArrayList<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder;
@@ -89,7 +94,6 @@ public class XMLRequests implements InterfaceRequests{
             XPathExpression expr = xpath.compile(requeteXPATH);
             // evaluer la requête XPATH
             NodeList nodes = (NodeList) expr.evaluate(xmldoc, XPathConstants.NODESET);
-            System.out.println(nodes.getLength() + " rendez-vous trouvé(s) pour " + nomcli);
             for (int i = 0; i < nodes.getLength(); i++)
             {
                 Node nNode = nodes.item(i);
@@ -99,13 +103,14 @@ public class XMLRequests implements InterfaceRequests{
                     String debut = eElement.getElementsByTagName("debut").item(0).getTextContent();
                     String client = eElement.getElementsByTagName("client").item(0).getTextContent();
                     String veto = eElement.getElementsByTagName("veterinaire").item(0).getTextContent();
-                    System.out.println(debut + " avec " + veto);
+                    donnees.add(new RendezVous(Timestamp.valueOf(debut), client, veto));
                 }
             }
         } catch (IOException | ParserConfigurationException | SAXException  | XPathExpressionException e) {
             System.err.println("Erreur à l'ouverture du fichier xml");
             e.printStackTrace(System.err);
         }
+        return donnees;
     }
 
     @Override

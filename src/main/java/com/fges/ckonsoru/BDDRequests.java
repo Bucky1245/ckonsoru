@@ -1,7 +1,13 @@
 package com.fges.ckonsoru;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.sql.*;
 
 public class BDDRequests implements InterfaceRequests{
     public Connection connexion(){
@@ -31,7 +37,8 @@ public class BDDRequests implements InterfaceRequests{
     }
 
     @Override
-    public void afficherCreneaux(int year, int month, int day){
+    public List<Disponibilites> afficherCreneaux(int year, int month, int day){
+        List<Disponibilites> donnees = new ArrayList<>();
         String dateTest = String.valueOf(day)+'-'+String.valueOf(month)+'-'+String.valueOf(year);
         // La requête est celle qui était dans ckonsoru.bdd
         String requetesql = "WITH creneauxDisponibles AS (SELECT vet_nom, generate_series(?::date+dis_debut, ?::date+dis_fin-'00:20:00'::time, '20 minutes'::interval) debut FROM disponibilite INNER JOIN veterinaire ON veterinaire.vet_id = disponibilite.vet_id WHERE dis_jour = EXTRACT('DOW' FROM ?::date) ORDER BY vet_nom, dis_id), creneauxReserves AS (SELECT vet_nom, rv_debut debut FROM rendezvous INNER JOIN veterinaire ON veterinaire.vet_id = rendezvous.vet_id WHERE rv_debut BETWEEN ?::date AND ?::date +'23:59:59'::time), creneauxRestants AS (SELECT * FROM creneauxDisponibles EXCEPT SELECT * FROM creneauxReserves) SELECT * FROM creneauxRestants ORDER BY vet_nom, debut";
@@ -46,11 +53,12 @@ public class BDDRequests implements InterfaceRequests{
             ResultSet res = request.executeQuery();
 
             while(res.next()){
-                System.out.println(res.getString(1) + " - dispo le " + res.getTimestamp(2));
+                donnees.add(new Disponibilites(res.getString(1), res.getTime(2), res.getTime(3), res.getString(4)));
             }
         } catch (Exception e) {
             System.out.println(e);
         }
+        return donnees;
     }
 
     @Override
@@ -85,7 +93,8 @@ public class BDDRequests implements InterfaceRequests{
     }
 
     @Override
-    public void afficheRdv(String nomcli){
+    public List<RendezVous> afficheRdv(String nomcli){
+        List<RendezVous> donnees = new ArrayList<>();
         String requetesql = "SELECT rv_id, rv_debut, vet_nom FROM rendezvous, veterinaire WHERE rv_client = ? AND veterinaire.vet_id = rendezvous.vet_id ORDER BY rv_debut DESC";
         try{
             Connection con = connexion();
@@ -94,11 +103,12 @@ public class BDDRequests implements InterfaceRequests{
             ResultSet res = request.executeQuery();
             System.out.println(getRows(res) + " rendez-vous trouvés pour " + nomcli);
             while(res.next()){
-                System.out.println(res.getTimestamp(2) + " avec " + res.getString(3));
+                donnees.add(new RendezVous(res.getTimestamp(3), res.getString(4), res.getString(2)));
             }
         }catch(Exception e){
             System.out.println(e);
         }
+        return donnees;
     }
 
     @Override

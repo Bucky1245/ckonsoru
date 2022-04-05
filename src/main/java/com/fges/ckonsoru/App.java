@@ -8,6 +8,7 @@ package com.fges.ckonsoru;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -67,13 +68,21 @@ public class App {
                 System.out.println("De quel jour souhaitez-vous afficher les créneaux (de forme jj/mm/aaaa) ?");
                 String datecherchee = sc.nextLine();
                 String partiesdates[] = datecherchee.split("/");
-                test.afficherCreneaux(Integer.parseInt(partiesdates[2]), Integer.parseInt(partiesdates[1]), Integer.parseInt(partiesdates[0]));
+                List<Disponibilites> donnees = test.afficherCreneaux(Integer.parseInt(partiesdates[2]), Integer.parseInt(partiesdates[1]), Integer.parseInt(partiesdates[0]));
+                for(Disponibilites disponibilites : donnees)
+                {
+                    disponibilites.toString();
+                }
             }else if(actionARealiser.equals("2")){
                 System.out.println("Liste de rendez-vous d'un client.");
                 System.out.println("Indiquer le nom du client :");
                 String nomcli = sc.nextLine();
 
-                    test.afficheRdv(nomcli);
+                List<RendezVous> donnees = test.afficheRdv(nomcli);
+                for(RendezVous string : donnees)
+                {
+                    string.toString();
+                }
             }else if(actionARealiser.equals("3")){
                 System.out.println("Prise de rendez-vous.");
                 System.out.println("Indiquer une date et heure de début au format JJ/MM/AAAA HH:MM (ex: 18/03/2021 15:00) :");
