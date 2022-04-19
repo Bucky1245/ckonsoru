@@ -22,6 +22,11 @@ public class App {
     }
 
     public static void main(String args[]){
+
+        //abonnement RendezVous avec les widgets
+        //[...]
+
+
         Scanner sc = new Scanner(System.in); // Pour la saisie clavier
         
         System.out.println("Bienvenue sur Clinique Konsoru !");
