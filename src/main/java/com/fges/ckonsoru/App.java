@@ -24,6 +24,11 @@ public class App {
     public static void main(String args[]){
 
         //abonnement RendezVous avec les widgets
+        //RDVObservableImpl observable = new RDVObservableImpl();
+        //for(Widget widget : widgets)
+        //{
+        // observable.enregistrerObservateur((RDVObserver) widget);
+        //}
         //[...]
 
 
